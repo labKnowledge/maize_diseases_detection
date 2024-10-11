@@ -84,10 +84,22 @@
                 </div>
             </div>
 
-            <video id="camera" class="w-full h-80 object-cover rounded-lg shadow-md mb-6 hidden"></video>
-            <button id="capture" class="w-full bg-agro-green text-white py-3 px-4 rounded-lg hover:bg-green-700 transition duration-300 mb-6 hidden transform hover:scale-105">
-                Capture Image
-            </button>
+            <div id="cameraContainer" class="mb-6 hidden">
+                <video id="camera" class="w-full h-80 object-cover rounded-lg shadow-md mb-4"></video>
+                <div class="flex justify-between items-center">
+                    <button id="switchCamera" class="bg-agro-green text-white py-2 px-4 rounded-lg hover:bg-green-700 transition duration-300 transform hover:scale-105">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                        </svg>
+                    </button>
+                    <button id="capture" class="bg-agro-yellow text-white py-2 px-4 rounded-lg hover:bg-yellow-600 transition duration-300 transform hover:scale-105">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                            <circle cx="12" cy="13" r="4" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
 
             <button onclick="predict()" class="w-full bg-agro-green text-white py-4 px-6 rounded-lg hover:bg-green-700 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 text-lg font-bold">
                 Predict Disease
@@ -181,8 +193,11 @@
         let detailsContent = document.getElementById('detailsContent');
         let classesDetailed;
         let camera = document.getElementById('camera');
+        let cameraContainer = document.getElementById('cameraContainer');
         let captureBtn = document.getElementById('capture');
+        let switchCameraBtn = document.getElementById('switchCamera');
         let stream;
+        let facingMode = "environment";
 
         // Load the classes-detailed.json file
         fetch('classes-detailed.json')
@@ -201,19 +216,26 @@
         }
 
         function openCamera() {
-            navigator.mediaDevices.getUserMedia({ video: true })
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: facingMode } })
                 .then(function(str) {
                     stream = str;
                     camera.srcObject = stream;
                     camera.play();
-                    camera.classList.remove('hidden');
-                    captureBtn.classList.remove('hidden');
+                    cameraContainer.classList.remove('hidden');
                     image.classList.add('hidden');
                 })
                 .catch(function(error) {
                     console.error("Error accessing the camera", error);
                     alert("Unable to access the camera. Please make sure you've granted the necessary permissions.");
                 });
+        }
+
+        switchCameraBtn.onclick = function() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+            facingMode = facingMode === "user" ? "environment" : "user";
+            openCamera();
         }
 
         captureBtn.onclick = function() {
@@ -229,11 +251,10 @@
         }
 
         function resetUI() {
-            resultElement.textContent = ''; // Clear previous result
+            resultElement.textContent = '';
             resultElement.classList.remove('opacity-100');
             detailsElement.classList.add('hidden');
-            camera.classList.add('hidden');
-            captureBtn.classList.add('hidden');
+            cameraContainer.classList.add('hidden');
             image.classList.remove('hidden');
             overlay.classList.add('opacity-100');
             setTimeout(() => {
