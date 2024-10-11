@@ -3,9 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Corn Disease Classifier (Powered by Eligapris TensorFlow ML Project)</title>
+    <title>AgroEye: Corn Disease Classifier</title>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'agro-green': '#2E7D32',
+                        'agro-yellow': '#FBC02D',
+                    }
+                }
+            }
+        }
+    </script>
     <style>
         @keyframes pulse {
             0%, 100% { opacity: 1; }
@@ -14,18 +26,39 @@
         .animate-pulse {
             animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
+        .bg-gradient {
+            background-image: linear-gradient(135deg, #E8F5E9 0%, #F1F8E9 100%);
+        }
     </style>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M50 5 L60 20 L80 30 Q95 50 80 70 L60 80 L50 95 L40 80 L20 70 Q5 50 20 30 L40 20 Z' fill='%23FFD700'/><circle cx='50' cy='35' r='5' fill='%23B8860B'/><circle cx='40' cy='50' r='5' fill='%23B8860B'/><circle cx='60' cy='50' r='5' fill='%23B8860B'/><circle cx='50' cy='65' r='5' fill='%23B8860B'/></svg>" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%232E7D32'/><path d='M30 70 Q50 30 70 70' stroke='%23FBC02D' stroke-width='8' fill='none'/><circle cx='50' cy='50' r='10' fill='%23FBC02D'/></svg>" />
 </head>
-<body class="bg-gradient-to-br from-green-50 to-blue-50 min-h-screen p-4">
+<body class="bg-gradient min-h-screen p-4 font-sans text-gray-800">
+    <header class="max-w-4xl mx-auto mb-8">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center">
+                <svg class="w-12 h-12 mr-4" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45" fill="#2E7D32"/>
+                    <path d="M30 70 Q50 30 70 70" stroke="#FBC02D" stroke-width="8" fill="none"/>
+                    <circle cx="50" cy="50" r="10" fill="#FBC02D"/>
+                </svg>
+                <h1 class="text-4xl font-bold text-agro-green">AgroEye</h1>
+            </div>
+            <nav>
+                <a href="#" class="text-agro-green hover:text-agro-yellow transition duration-300">About</a>
+                <a href="#" class="ml-4 text-agro-green hover:text-agro-yellow transition duration-300">Contact</a>
+            </nav>
+        </div>
+    </header>
+
     <div class="max-w-4xl mx-auto">
         <div class="bg-white p-8 rounded-2xl shadow-lg w-full transition-all duration-300 hover:shadow-xl mb-8">
-            <h1 class="text-3xl font-bold mb-6 text-center text-green-600">Corn Disease Classifier</h1>
+            <h2 class="text-3xl font-bold mb-4 text-center text-agro-green">Corn Disease Classifier</h2>
+            <p class="text-center mb-6 text-gray-600">Powered by advanced AI, AgroEye helps farmers identify corn diseases quickly and accurately.</p>
             
             <div class="mb-6">
-                <div class="flex space-x-4">
-                    <button onclick="openCamera()" class="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                    <button onclick="openCamera()" class="flex-1 bg-agro-green text-white py-3 px-4 rounded-lg hover:bg-green-700 transition duration-300 flex items-center justify-center transform hover:scale-105">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
@@ -33,9 +66,9 @@
                     </button>
                     <div class="relative flex-1">
                         <input accept="image/*" type='file' id="input_button" class="hidden"/>
-                        <label for="input_button" class="cursor-pointer flex items-center justify-center w-full text-sm text-white
-                            py-2 px-4 rounded-lg border-0 font-semibold bg-green-500 hover:bg-green-600 transition duration-300">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <label for="input_button" class="cursor-pointer flex items-center justify-center w-full text-white
+                            py-3 px-4 rounded-lg border-0 font-semibold bg-agro-yellow hover:bg-yellow-600 transition duration-300 transform hover:scale-105">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
                             Choose File
@@ -45,32 +78,33 @@
             </div>
 
             <div class="mb-6 relative">
-                <img id="img1" src="image.jpg" alt="Uploaded or captured corn leaf image" class="w-full h-64 object-cover rounded-lg shadow-md transition-all duration-300" />
+                <img id="img1" src="image.jpg" alt="Uploaded or captured corn leaf image" class="w-full h-80 object-cover rounded-lg shadow-md transition-all duration-300" />
                 <div id="overlay" class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg opacity-0 transition-opacity duration-300">
-                    <p class="text-white text-lg font-semibold">Image ready</p>
+                    <p class="text-white text-xl font-semibold">Image ready</p>
                 </div>
             </div>
 
-            <video id="camera" class="w-full h-64 object-cover rounded-lg shadow-md mb-6 hidden"></video>
-            <button id="capture" class="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300 mb-6 hidden">
+            <video id="camera" class="w-full h-80 object-cover rounded-lg shadow-md mb-6 hidden"></video>
+            <button id="capture" class="w-full bg-agro-green text-white py-3 px-4 rounded-lg hover:bg-green-700 transition duration-300 mb-6 hidden transform hover:scale-105">
                 Capture Image
             </button>
 
-            <button onclick="predict()" class="w-full bg-green-500 text-white py-3 px-4 rounded-lg hover:bg-green-600 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+            <button onclick="predict()" class="w-full bg-agro-green text-white py-4 px-6 rounded-lg hover:bg-green-700 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 text-lg font-bold">
                 Predict Disease
             </button>
 
-            <div id="result" class="mt-6 text-center text-lg font-semibold opacity-0 transition-all duration-300"></div>
+            <div id="result" class="mt-6 text-center text-xl font-semibold opacity-0 transition-all duration-300"></div>
         </div>
 
         <div id="details" class="bg-white p-8 rounded-2xl shadow-lg w-full transition-all duration-300 hover:shadow-xl mt-8 hidden">
-            <h2 id="detailsTitle" class="text-2xl font-bold mb-4 text-green-600"></h2>
-            <div id="detailsContent"></div>
+            <h2 id="detailsTitle" class="text-3xl font-bold mb-6 text-agro-green"></h2>
+            <div id="detailsContent" class="text-gray-700"></div>
         </div>
     </div>
 
-    <footer class="bg-green-600 text-white py-4 text-center">
-        <p class="text-sm">Powered by Eligapris TensorFlow ML Project</p>
+    <footer class="max-w-4xl mx-auto bg-agro-green text-white py-6 text-center mt-12">
+        <p class="text-sm">AgroEye: Empowering farmers with AI-driven insights</p>
+        <p class="text-xs mt-2">© 2024 AgroEye. All rights reserved.</p>
     </footer>
 
     <script>
